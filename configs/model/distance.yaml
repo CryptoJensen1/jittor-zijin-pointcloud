@@ -1,0 +1,4 @@
+__target__: DistanceModule
+frame_knn: 16
+feat_embedding_dim: 256
+decoder_hidden_dim: 64

@@ -1,0 +1,19 @@
+mode: train
+debug: False
+
+components:
+  data: train
+  transform: vm
+  system: distance
+  model: distance
+
+loss:
+  loss: 1.0
+
+optimizer:
+  __target__: adam
+  lr: 0.0001
+
+trainer:
+  epochs: 50
+  warmup_epochs: 5
