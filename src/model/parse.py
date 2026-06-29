@@ -1,11 +1,13 @@
 from .spec import ModelSpec
 from .vm import VelocityModule
 from .distance import DistanceModule
+from .drd_net import DrdDenoiseNet
 
 def get_model(model_config, **kwargs) -> ModelSpec:
     MAP = {
         'VelocityModule': VelocityModule,
         'DistanceModule': DistanceModule,
+        'DrdDenoiseNet': DrdDenoiseNet,
     }
     __target__ = model_config['__target__']
     del model_config['__target__']

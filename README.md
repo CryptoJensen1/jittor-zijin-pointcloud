@@ -55,6 +55,48 @@ result.zip
         denoised.npy    # np.float32, shape (N, 3)
 ```
 
+## DRD 扩散模型推理
+
+基于 TVCG 2026 "Deterministic Point Cloud Diffusion for Denoising" (DRD) 的改进实验。
+
+### 配置
+```bash
+# 修改 configs/task/predict_drd.yaml 中的 load_ckpt 指向 DRD checkpoint
+python run.py --task predict_drd
+```
+
+### 模型文件
+| 文件 | 说明 |
+|------|------|
+| `src/model/drd_net.py` | DRD 扩散模型（DrdDenoiseNet + DrdDecoder） |
+| `src/model/time_emb.py` | 时间嵌入模块（正弦位置编码 + MLP） |
+| `configs/model/drd.yaml` | DRD 模型配置（T=30, schedule=decreased） |
+| `configs/task/predict_drd.yaml` | DRD 推理配置 |
+
+## 实验版本历史
+
+### 点云去噪（正赛赛道二）
+
+| 版本 | 核心改动 | CD | P2S | 总分 | 说明 |
+|------|---------|-----|------|------|------|
+| Baseline | VM 100ep，单步推理 | 47.94 | 75.03 | 61.48 | 官方基线 |
+| V3 (最佳) | VM 200ep + Warmup Cosine LR | 50.19 | 75.00 | **62.59** | 训练侧改进，稳定有效 |
+| V2 | 多步x3 + patch 2000 | 33.81 | 84.45 | 59.13 | 推理侧：迭代过冲 |
+| V4 | 单步 + patch 2000 | 48.99 | 72.77 | 60.88 | 大patch单步无增益 |
+| DM | V3 + DistanceModule | 36.63 | 54.23 | 45.43 | Jittor兼容性受限 |
+| Fusion | 三尺度KNN平均 | 50.09 | 74.80 | 62.44 | 三尺度结果一致 |
+| V6 | 5角度旋转投票 | 49.49 | 74.28 | 61.89 | 旋转对去噪影响小 |
+| V8 | 10步Langevin | 49.17 | 74.13 | 61.65 | 精细步长无增益 |
+| **DRD** | **30步扩散，SCnet DCU训练254ep** | **33.81** | **84.45** | **59.13** | **扩散范式探索：P2S显著提升，CD受限于训练不完整** |
+
+### 点云分类（热身赛二）
+
+| 版本 | 核心改进 | A榜准确率 | 说明 |
+|------|---------|-----------|------|
+| Baseline | 基础PCT | 84.89% | 基线 |
+| V2 | 受控增强+2048pt+Label Smooth | 86.30% | 核心改进 |
+| V3 (最佳) | V2 + 10次旋转投票 | **86.71%** | 投票推理 |
+
 ## 本地评测（需要 GT 数据，仅组委会持有）
 ```bash
 python evaluate.py \

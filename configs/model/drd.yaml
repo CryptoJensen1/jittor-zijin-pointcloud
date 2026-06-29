@@ -1,0 +1,8 @@
+__target__: DrdDenoiseNet
+frame_knn: 16
+num_train_points: 256
+feat_embedding_dim: 384
+decoder_hidden_dim: 128
+dsm_sigma: 0.01
+T: 30
+schedule: decreased

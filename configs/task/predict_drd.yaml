@@ -1,0 +1,14 @@
+mode: predict
+debug: False
+load_ckpt: experiments/drd/checkpoint_299.pkl
+
+components:
+  data: predict
+  transform: vm
+  system: drd
+  model: drd
+
+writer:
+  __target__: vm
+  save_dir: tmp_predict
+  save_name: predict
